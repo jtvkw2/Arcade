@@ -1,6 +1,7 @@
 // Draw the enemy and player objects on the screen
 Object.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    draw_info();
 }
 
 //Reset player to beginning position
@@ -104,9 +105,8 @@ var allEnemies = [];
     allEnemies.push(new Enemy(-2,150));
     allEnemies.push(new Enemy(-2,220));
 }());
+
 var player = new Player();
-
-
 board = document.getElementById('game');
 var context = board.getContext('2d');
 
@@ -135,6 +135,7 @@ var resetGame = function(){
   game.level = 1;
   game.score = 0;
   game.highest = -1;
+  draw_info();
   this.reset();
 }
 var draw_info = function() {
@@ -184,18 +185,41 @@ var win = function() {
 
 var game_over = function() {
     context.clearRect(0, 0, 399, 70);
-    context.font = 'bold 10pt arial';
-    context.fillStyle = '#FFFFFF';
-    context.fillText('GAME', 100, 30);
-    context.fillText('OVER', 200, 30);
     if (game.score >= highscore) {
         localStorage['highscore'] = game.score;
-        context.font = 'bold 10pt arial';
-        context.fillStyle = '#00EE00';
-        context.fillText('YOU GOT A', 200, 50);
-        context.fillText('HIGHSCORE', 200, 70);
+        highMessage = "GAME OVER \n\n You got the High Score of:" +highscore;
+        $('.modal-text').text(highMessage);
+        $('.modal-button').text("Restart");
+        modal.style.display = "block";
     }
-    
+    else{
+      overMessage = "GAME OVER \n\n Your score was: "+game.score+" \n\n The high score was: " +highscore;
+      $('.modal-text').text(overMessage);
+      $('.modal-button').text("Restart");
+      modal.style.display = "block";
+    }
+
+}
+
+// Get the modal
+var modal = document.getElementById('myModal');
+
+// When the user clicks anywhere outside of the modal, close it
+
+document.getElementById("restart").onclick = function() {
     resetGame();
+    modal.style.display = "none";
+
+}
+
+document.getElementById("restart").onclick = function() {
+    resetGame();
+    modal.style.display = "none";
+
+}
+
+document.getElementById("start").onclick = function() {
+    resetGame();
+    modal.style.display = "none";
 
 }
