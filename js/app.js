@@ -38,7 +38,15 @@ Enemy.prototype.update = function(dt) {
     //If the player comes within 30px of an enemy's x and y coordinates, reset the game
     if(player.x >= this.x - 30 && player.x <= this.x + 30){
         if(player.y >= this.y - 30 && player.y <= this.y + 30){
-            this.reset();
+            game.lives-= 1;
+            if (game.lives < 0){
+              console.log("gameover");
+              game_over();
+            }
+            else{
+              draw_info();
+              this.reset();
+            }
         }
     }
 }
@@ -96,8 +104,9 @@ var allEnemies = [];
     allEnemies.push(new Enemy(-2,150));
     allEnemies.push(new Enemy(-2,220));
 }());
-
 var player = new Player();
+
+
 board = document.getElementById('game');
 var context = board.getContext('2d');
 
@@ -114,15 +123,22 @@ document.addEventListener('keyup', function(e) {
     player.handleInput(allowedKeys[e.keyCode]);
 });
 
-var game = function() {
-    this.lives = 5;
-    this.extra = 0;
-    this.level = 1;
-    this.score = 0;
+game.lives = 5;
+game.extra = 0;
+game.level = 1;
+game.score = 0;
+game.highest = -1;
 
+var resetGame = function(){
+  game.lives = 5;
+  game.extra = 0;
+  game.level = 1;
+  game.score = 0;
+  game.highest = -1;
+  this.reset();
 }
-
 var draw_info = function() {
+    context.clearRect(0, 0, 399, 70);
     context.font = 'bold 14pt arial';
     context.fillStyle = '#00EE00';
     context.fillText('Lives: ', 50, 30);
@@ -140,7 +156,7 @@ var draw_info = function() {
 var draw_lives = function() {
   context.font = 'bold 15pt arial';
   context.fillStyle = '#00EE00';
-  context.fillText(game.level, 125, 30);
+  context.fillText(game.lives, 125, 30);
 
 };
 
@@ -165,3 +181,21 @@ var win = function() {
     game.win = 15;
     game.level++;
 };
+
+var game_over = function() {
+    context.clearRect(0, 0, 399, 70);
+    context.font = 'bold 10pt arial';
+    context.fillStyle = '#FFFFFF';
+    context.fillText('GAME', 100, 30);
+    context.fillText('OVER', 200, 30);
+    if (game.score >= highscore) {
+        localStorage['highscore'] = game.score;
+        context.font = 'bold 10pt arial';
+        context.fillStyle = '#00EE00';
+        context.fillText('YOU GOT A', 200, 50);
+        context.fillText('HIGHSCORE', 200, 70);
+    }
+    
+    resetGame();
+
+}
