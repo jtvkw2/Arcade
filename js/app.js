@@ -101,23 +101,27 @@ Player.prototype.handleInput = function(e){
     this.ctlKey = e;
 }
 
-var Coin = function() {
-  this.sprite = 'images/Gem-Blue.png';
-  var coin = 5;
-  //setInterval(getRandomInt(0, 5), 30);
-
-  if(coin == 5){
-    this.x = getRandomInt(0, 400);
-    this.y = getRandomInt(30, 200);
-    Coin.drawImage(Resources.get(this.sprite), this.x, this.y);
-  }
+var Coin = function(x , y) {
+    this.sprite = 'images/Gem-Blue.png';
+    console.log("precoin");
+    this.x = x;
+    this.y = y;
 }
 
 Coin.prototype.update = function(dt) {
   if(player.x >= this.x - 30 && player.x <= this.x + 30){
       if(player.y >= this.y - 30 && player.y <= this.y + 30){
-        game.score += 100;
+        var allcoin = [];
+        game.score += 10;
+          this.x = getRandomInt(0, 400);
+          this.y = getRandomInt(30, 200);
       }
+  }
+  var coin = setInterval(getRandomInt(0, 5), 30);
+  if(coin == 5){
+    console.log("coin");
+    this.x = getRandomInt(0, 400);
+    this.y = getRandomInt(30, 200);
   }
 }
 
@@ -131,6 +135,7 @@ var allEnemies = [];
 }());
 
 var player = new Player();
+var coin = new Coin();
 board = document.getElementById('game');
 var context = board.getContext('2d');
 
@@ -218,7 +223,7 @@ var game_over = function() {
 
     if (game.score >= highscore) {
         localStorage['highscore'] = game.score;
-        highMessage = "You got the High Score of:" +highscore;
+        highMessage = "You got the High Score of: " +game.score;
         $('.modal-high').text(highMessage);
         modal.style.display = "block";
     }

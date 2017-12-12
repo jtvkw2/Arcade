@@ -40,7 +40,6 @@ var Engine = (function(global) {
             if(playerY >= enemyY - 20 && playerY <= enemyY + 20){
                 if(playerX >= enemyX - 20 && playerX <= enemyX + 20){
                     this.reset();
-                    console.log("boom");
                 }
             }
         });
@@ -55,6 +54,7 @@ var Engine = (function(global) {
             enemy.update(dt);
         });
         player.update();
+        coin.update();
     }
 
     function render() {
@@ -84,9 +84,11 @@ var Engine = (function(global) {
             enemy.render();
         });
         player.render();
+        coin.render();
     }
 
     Resources.load([
+        'images/Gem-Blue.png',
         'images/stone-block.png',
         'images/water-block.png',
         'images/grass-block.png',
