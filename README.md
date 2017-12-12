@@ -1,6 +1,35 @@
-frontend-nanodegree-arcade-game
-===============================
+# Bug Boy in Water World
 
-Students should use this [rubric](https://review.udacity.com/#!/projects/2696458597/rubric) for self-checking their submission. Make sure the functions you write are **object-oriented** - either class functions (like Player and Enemy) or class prototype functions such as Enemy.prototype.checkCollisions, and that the keyword 'this' is used appropriately within your class and class prototype functions to refer to the object the function is called upon. Also be sure that the **readme.md** file is updated with your instructions on both how to 1. Run and 2. Play your arcade game.
+This a Concentration game that I built, it runs on basic Javascript and jquery
 
-For detailed instructions on how to get started, check out this [guide](https://docs.google.com/document/d/1v01aScPjSWCCWQLIpFqvg3-vXLH2e8_SZQKC8jNO0Dc/pub?embedded=true).
+## How to Load the game
+
+- Clone the **[repo](https://github.com/jtvkw2/Bug_Boy_in_Water_World)** and open index.html -- or --
+- Play on GitHub.io: **[Bug Boy in Water World](https://jtvkw2.github.io/Bug_Boy_in_Water_World/)**
+
+
+### How to Play the Game
+
+Try to get to the top of the board and into the water and get as high of a score as possible.
+
+- Getting to the water is 50 pts.
+- Each gem is 10 pts.
+- If you earn 1000 pts, you get an extra life.
+
+### Installing
+
+No Installation required
+
+## Contributing
+
+- Fork the repository.
+- Create a branch (e.g. `my-awesome-feature`) for the work you’re going to do.
+- Make your awesome changes in your topic branch.
+- Send a pull request from your branch to this repository.
+
+## Built With
+
+* Udacity - Initial repository this pulled from
+
+## License
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details

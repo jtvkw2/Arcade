@@ -109,8 +109,8 @@ var Coin = function(x , y) {
 }
 
 Coin.prototype.update = function(dt) {
-  if(player.x >= this.x - 30 && player.x <= this.x + 30){
-      if(player.y >= this.y - 30 && player.y <= this.y + 30){
+  if(player.x >= this.x - 40 && player.x <= this.x + 40){
+      if(player.y >= this.y - 40 && player.y <= this.y + 40){
         var allcoin = [];
         game.score += 10;
           this.x = getRandomInt(0, 400);
