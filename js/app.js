@@ -23,6 +23,7 @@ var Enemy = function(x,y) {
     //x and y coordinates and movement speed
     this.x = x;
     this.y = y;
+    var level = game.level;
     this.speed = Math.floor((Math.random() * 200) + 100);
 }
 
@@ -55,7 +56,11 @@ Enemy.prototype.update = function(dt) {
 /*
     Player Object
 */
-
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+}
 // Player class and initial x and y coordinates
 var Player = function(){
     this.sprite = 'images/char-boy.png';
@@ -96,6 +101,25 @@ Player.prototype.handleInput = function(e){
     this.ctlKey = e;
 }
 
+var Coin = function() {
+  this.sprite = 'images/Gem-Blue.png';
+  var coin = 5;
+  //setInterval(getRandomInt(0, 5), 30);
+
+  if(coin == 5){
+    this.x = getRandomInt(0, 400);
+    this.y = getRandomInt(30, 200);
+    Coin.drawImage(Resources.get(this.sprite), this.x, this.y);
+  }
+}
+
+Coin.prototype.update = function(dt) {
+  if(player.x >= this.x - 30 && player.x <= this.x + 30){
+      if(player.y >= this.y - 30 && player.y <= this.y + 30){
+        game.score += 100;
+      }
+  }
+}
 
 // Instantiate enemies and player objects
 var allEnemies = [];
@@ -140,37 +164,37 @@ var resetGame = function(){
 }
 var draw_info = function() {
     context.clearRect(0, 0, 399, 70);
-    context.font = 'bold 14pt arial';
-    context.fillStyle = '#00EE00';
+    context.font = 'bold 14pt Questrial';
+    context.fillStyle = '#000000';
     context.fillText('Lives: ', 50, 30);
     draw_lives();
-    context.font = 'bold 14pt arial';
-    context.fillStyle = '#00EE00';
-    context.fillText('Level: ', 200, 30);
+    context.font = 'bold 14pt Questrial';
+    context.fillStyle = '#000000';
+    context.fillText('Level: ', 250, 30);
     draw_level();
-    context.font = 'bold 10pt arial';
-    context.fillText('Score: ', 4, 70);
+    context.font = 'bold 10pt Questrial';
+    context.fillText('Score: ', 25, 70);
     context.fillText('Highscore: ', 200, 70);
     draw_score();
 };
 
 var draw_lives = function() {
-  context.font = 'bold 15pt arial';
-  context.fillStyle = '#00EE00';
-  context.fillText(game.lives, 125, 30);
+  context.font = 'bold 15pt Questrial';
+  context.fillStyle = '#000000';
+  context.fillText(game.lives, 130, 30);
 
 };
 
 var draw_level = function() {
-    context.font = 'bold 15pt arial';
-    context.fillStyle = '#00EE00';
-    context.fillText(game.level, 275, 30);
+    context.font = 'bold 15pt Questrial';
+    context.fillStyle = '#000000';
+    context.fillText(game.level, 325, 30);
 };
 
 var draw_score = function() {
-    context.font = 'bold 10pt arial';
-    context.fillStyle = '#00EE00';
-    context.fillText(game.score, 50, 70);
+    context.font = 'bold 10pt Questrial';
+    context.fillStyle = '#000000';
+    context.fillText(game.score, 150, 70);
     if (window.localStorage['highscore']) {
         highscore = localStorage['highscore'];
     } else highscore = 0;
@@ -181,21 +205,28 @@ var win = function() {
     game.score += 50;
     game.win = 15;
     game.level++;
+
+    if(game.score >= 1000 && game.extra == 0){
+      game.lives++;
+      game.extra++;
+    }
 };
 
 var game_over = function() {
     context.clearRect(0, 0, 399, 70);
+    this.reset();
+
     if (game.score >= highscore) {
         localStorage['highscore'] = game.score;
-        highMessage = "GAME OVER \n\n You got the High Score of:" +highscore;
-        $('.modal-text').text(highMessage);
-        $('.modal-button').text("Restart");
+        highMessage = "You got the High Score of:" +highscore;
+        $('.modal-high').text(highMessage);
         modal.style.display = "block";
     }
     else{
-      overMessage = "GAME OVER \n\n Your score was: "+game.score+" \n\n The high score was: " +highscore;
-      $('.modal-text').text(overMessage);
-      $('.modal-button').text("Restart");
+      topMessage = "Your score was: " + game.score;
+      bottomMessage = "The high score was: " + highscore;
+      $('.modal-score').text(topMessage);
+      $('.modal-high').text(bottomMessage);
       modal.style.display = "block";
     }
 
@@ -207,18 +238,6 @@ var modal = document.getElementById('myModal');
 // When the user clicks anywhere outside of the modal, close it
 
 document.getElementById("restart").onclick = function() {
-    resetGame();
-    modal.style.display = "none";
-
-}
-
-document.getElementById("restart").onclick = function() {
-    resetGame();
-    modal.style.display = "none";
-
-}
-
-document.getElementById("start").onclick = function() {
     resetGame();
     modal.style.display = "none";
 
