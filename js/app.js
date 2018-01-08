@@ -1,117 +1,96 @@
-// Draw the enemy and player objects on the screen
-Object.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-    draw_info();
-}
+var Enemy = function(y, speed) {
+  this.x = 0;
+  this.y = y;
+  this.speed = speed;
+  this.sprite = 'images/enemy-bug.png';
+};
 
-//Reset player to beginning position
-Object.prototype.reset = function() {
-  player.x = 200;
-  player.y = 400;
-}
-
-/*
-    Enemy Objects
-*/
-
-// Enemies the player must avoid
-var Enemy = function(x,y) {
-
-    // The image/sprite for enemies
-    this.sprite = 'images/enemy-bug.png';
-
-    //x and y coordinates and movement speed
-    this.x = x;
-    this.y = y;
-    var level = game.level;
-    this.speed = Math.floor((Math.random() * 200) + 100);
-}
-
-// Update the enemy's position, required method for game
-// Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
-    //if the enemy crosses off screen, reset its position. Otherwise, it keeps running.
-    if(this.x <= 550){
-        this.x += this.speed * dt;
-    }else{
-        this.x = -2;
-    }
-
-    //If the player comes within 30px of an enemy's x and y coordinates, reset the game
-    if(player.x >= this.x - 30 && player.x <= this.x + 30){
-        if(player.y >= this.y - 30 && player.y <= this.y + 30){
-            game.lives-= 1;
-            if (game.lives < 0){
-              console.log("gameover");
-              game_over();
-            }
-            else{
-              draw_info();
-              this.reset();
-            }
+  if (this.x > 600){
+    this.x = -100;
+  }
+  else{
+    this.x += this.speed * dt;
+  }
+  if(player.x >= this.x - 60 && player.x <= this.x + 60){
+      if(player.y >= this.y - 60 && player.y <= this.y + 60){
+        game.lives-= 1;
+        if (game.lives < 0){
+          console.log("gameover");
+          game_over();
         }
+        else{
+          draw_info();
+          reset();
+        }
+      }
     }
+};
+Enemy.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+
+var Player = function(x, y, speed) {
+  this.x = 200;
+  this.y = 400;
+  this.speed = speed;
+  this.sprite = this.sprite = 'images/char-boy.png';
 }
 
-/*
-    Player Object
-*/
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
-}
-// Player class and initial x and y coordinates
-var Player = function(){
-    this.sprite = 'images/char-boy.png';
-    this.x = 200;
-    this.y = 400;
-}
-
-//Update player position
-Player.prototype.update = function(){
-    //if left key is pressed and player is not on edge of map, pressed decrement x
-    if(this.ctlKey === 'left' && this.x > 0){
-        this.x = this.x - 50;
-    //if right key is pressed and player is not on edge of map increment x
-    }else if(this.ctlKey === 'right' && this.x != 400){
-        this.x = this.x + 50;
-    //if up key is pressed increment y
-    }else if(this.ctlKey === 'up'){
-        this.y = this.y - 50;
-    //if down key is pressed and player is not on edge of map decrement y
-    }else if (this.ctlKey === 'down' && this.y != 400){
-        this.y = this.y + 50;
-    }
-    this.ctlKey = null;
-
-    //If on water, reset
-    if(this.y < 25){
+Player.prototype.update = function(dt){
+  if(this.y < 50){
       win();
       draw_info();
-      this.reset();
-      console.log(game.lives, game.score, game.level);
+      reset();
+  }
+  draw_info();
 
-    }
-}
+};
 
+Player.prototype.handleInput = function(key){
+  switch(key) {
+    case 'up':
+      if (this.y > 0){
+        this.y -= 50;
+      }
+      break;
+    case 'down':
+      if (this.y < 600 && this.y != 400) {
+        this.y += 50;
+      }
+      break;
+    case 'left':
+      if (this.x > 0 && this.x > 0) {
+        this.x -= 50;
+      }
+      break;
+    case 'right':
+      if (this.x < 600 && this.x !=400){
+        this.x += 50;
+      }
+  }
+};
 
-//Input handler for player
-Player.prototype.handleInput = function(e){
-    this.ctlKey = e;
-}
+Player.prototype.render = function(){
+  ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+var reset = function() {
+  player.x = 200;
+  player.y = 400;
+};
+
 
 var Coin = function(x , y) {
     this.sprite = 'images/Gem-Blue.png';
-    console.log("precoin");
     this.x = x;
     this.y = y;
 }
 
 Coin.prototype.update = function(dt) {
-  if(player.x >= this.x - 40 && player.x <= this.x + 40){
-      if(player.y >= this.y - 40 && player.y <= this.y + 40){
-        var allcoin = [];
+  if(player.x >= this.x - 60 && player.x <= this.x + 60){
+      if(player.y >= this.y - 60 && player.y <= this.y + 60){
         game.score += 10;
           this.x = getRandomInt(0, 400);
           this.y = getRandomInt(30, 200);
@@ -125,22 +104,18 @@ Coin.prototype.update = function(dt) {
   }
 }
 
-// Instantiate enemies and player objects
-var allEnemies = [];
-(function setEnemies(){
-    allEnemies.push(new Enemy(-2, 60));
-    allEnemies.push(new Enemy(-2, 100));
-    allEnemies.push(new Enemy(-2,150));
-    allEnemies.push(new Enemy(-2,220));
-}());
+Coin.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
 
+var enemy1 = new Enemy(70, (Math.random() * 200));
+var enemy2 = new Enemy(125, (Math.random() * 200));
+var enemy3 = new Enemy(185, (Math.random() * 200));
+var enemy4 = new Enemy(225, (Math.random() * 200));
+var allEnemies = [enemy1, enemy2, enemy3, enemy4];
 var player = new Player();
 var coin = new Coin();
-board = document.getElementById('game');
-var context = board.getContext('2d');
 
-// listens for key presses and sends the keys to
-// Player.handleInput() method.
 document.addEventListener('keyup', function(e) {
     var allowedKeys = {
         37: 'left',
@@ -151,6 +126,9 @@ document.addEventListener('keyup', function(e) {
 
     player.handleInput(allowedKeys[e.keyCode]);
 });
+
+board = document.getElementById('game');
+var context = board.getContext('2d');
 
 game.lives = 5;
 game.extra = 0;
@@ -165,7 +143,7 @@ var resetGame = function(){
   game.score = 0;
   game.highest = -1;
   draw_info();
-  this.reset();
+  reset();
 }
 var draw_info = function() {
     context.clearRect(0, 0, 399, 70);
@@ -217,9 +195,16 @@ var win = function() {
     }
 };
 
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+}
+
+
 var game_over = function() {
     context.clearRect(0, 0, 399, 70);
-    this.reset();
+    reset();
 
     if (game.score >= highscore) {
         localStorage['highscore'] = game.score;
@@ -237,13 +222,9 @@ var game_over = function() {
 
 }
 
-// Get the modal
 var modal = document.getElementById('myModal');
-
-// When the user clicks anywhere outside of the modal, close it
 
 document.getElementById("restart").onclick = function() {
     resetGame();
     modal.style.display = "none";
-
 }
