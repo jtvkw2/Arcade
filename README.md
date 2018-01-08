@@ -1,6 +1,6 @@
 # Bug Boy in Water World
 
-This a Concentration game that I built, it runs on basic Javascript and jquery
+This a frogger style game that I built, it runs on basic Javascript and jquery
 
 ## How to Load the game
 
