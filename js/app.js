@@ -1,3 +1,4 @@
+  'use strict';
 var Enemy = function(y, speed) {
   this.x = 0;
   this.y = y;
@@ -14,14 +15,15 @@ Enemy.prototype.update = function(dt) {
   }
   if(player.x >= this.x - 60 && player.x <= this.x + 60){
       if(player.y >= this.y - 60 && player.y <= this.y + 60){
-        game.lives-= 1;
-        if (game.lives < 0){
+        player.lives-= 1;
+        console.log(player.lives);
+        if (player.lives < 0){
           console.log("gameover");
           game_over();
         }
         else{
           draw_info();
-          reset();
+          player.reset();
         }
       }
     }
@@ -34,18 +36,33 @@ Enemy.prototype.render = function() {
 var Player = function(x, y, speed) {
   this.x = 200;
   this.y = 400;
-  this.speed = speed;
-  this.sprite = this.sprite = 'images/char-boy.png';
+  this.sprite = 'images/char-boy.png';
+  this.lives = 5;
+  this.extra = 0;
+  this.level = 1;
+  this.score = 0;
+  this.highest = -1;
 }
 
 Player.prototype.update = function(dt){
   if(this.y < 50){
       win();
       draw_info();
-      reset();
+      this.reset();
   }
   draw_info();
 
+};
+
+Player.prototype.newGame = function(){
+  this.x = 200;
+  this.y = 400;
+  this.lives = 5;
+  this.extra = 0;
+  this.level = 1;
+  this.score = 0;
+  this.highest = -1;
+  draw_info();
 };
 
 Player.prototype.handleInput = function(key){
@@ -76,9 +93,10 @@ Player.prototype.render = function(){
   ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-var reset = function() {
-  player.x = 200;
-  player.y = 400;
+Player.prototype.reset = function() {
+  this.x = 200;
+  this.y = 400;
+  draw_info();
 };
 
 
@@ -91,16 +109,10 @@ var Coin = function(x , y) {
 Coin.prototype.update = function(dt) {
   if(player.x >= this.x - 60 && player.x <= this.x + 60){
       if(player.y >= this.y - 60 && player.y <= this.y + 60){
-        game.score += 10;
+        player.score += 10;
           this.x = getRandomInt(0, 400);
           this.y = getRandomInt(30, 200);
       }
-  }
-  var coin = setInterval(getRandomInt(0, 5), 30);
-  if(coin == 5){
-    console.log("coin");
-    this.x = getRandomInt(0, 400);
-    this.y = getRandomInt(30, 200);
   }
 }
 
@@ -114,7 +126,7 @@ var enemy3 = new Enemy(185, (Math.random() * 200));
 var enemy4 = new Enemy(225, (Math.random() * 200));
 var allEnemies = [enemy1, enemy2, enemy3, enemy4];
 var player = new Player();
-var coin = new Coin();
+var coin = new Coin(getRandomInt(0, 400), getRandomInt(30, 200) );
 
 document.addEventListener('keyup', function(e) {
     var allowedKeys = {
@@ -127,24 +139,9 @@ document.addEventListener('keyup', function(e) {
     player.handleInput(allowedKeys[e.keyCode]);
 });
 
-board = document.getElementById('game');
+var board = document.getElementById('game');
 var context = board.getContext('2d');
 
-game.lives = 5;
-game.extra = 0;
-game.level = 1;
-game.score = 0;
-game.highest = -1;
-
-var resetGame = function(){
-  game.lives = 5;
-  game.extra = 0;
-  game.level = 1;
-  game.score = 0;
-  game.highest = -1;
-  draw_info();
-  reset();
-}
 var draw_info = function() {
     context.clearRect(0, 0, 399, 70);
     context.font = 'bold 14pt Questrial';
@@ -164,56 +161,49 @@ var draw_info = function() {
 var draw_lives = function() {
   context.font = 'bold 15pt Questrial';
   context.fillStyle = '#000000';
-  context.fillText(game.lives, 130, 30);
+  context.fillText(player.lives, 130, 30);
 
 };
 
 var draw_level = function() {
     context.font = 'bold 15pt Questrial';
     context.fillStyle = '#000000';
-    context.fillText(game.level, 325, 30);
+    context.fillText(player.level, 325, 30);
 };
 
 var draw_score = function() {
     context.font = 'bold 10pt Questrial';
     context.fillStyle = '#000000';
-    context.fillText(game.score, 150, 70);
+    context.fillText(player.score, 150, 70);
     if (window.localStorage['highscore']) {
-        highscore = localStorage['highscore'];
+        var highscore = localStorage['highscore'];
     } else highscore = 0;
     context.fillText(highscore, 350, 70);
 };
 
 var win = function() {
-    game.score += 50;
-    game.win = 15;
-    game.level++;
+    player.score += 50;
+    player.win = 15;
+    player.level++;
 
-    if(game.score >= 1000 && game.extra == 0){
-      game.lives++;
-      game.extra++;
+    if(player.score >= 1000 && player.extra == 0){
+      player.lives++;
+      player.extra++;
     }
 };
 
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
-}
-
-
 var game_over = function() {
     context.clearRect(0, 0, 399, 70);
-    reset();
+    player.reset();
 
-    if (game.score >= highscore) {
-        localStorage['highscore'] = game.score;
-        highMessage = "You got the High Score of: " +game.score;
+    if (player.score >= highscore) {
+        localStorage['highscore'] = player.score;
+        highMessage = "You got the High Score of: " +player.score;
         $('.modal-high').text(highMessage);
         modal.style.display = "block";
     }
     else{
-      topMessage = "Your score was: " + game.score;
+      topMessage = "Your score was: " + player.score;
       bottomMessage = "The high score was: " + highscore;
       $('.modal-score').text(topMessage);
       $('.modal-high').text(bottomMessage);
@@ -225,6 +215,12 @@ var game_over = function() {
 var modal = document.getElementById('myModal');
 
 document.getElementById("restart").onclick = function() {
-    resetGame();
+    player.newGame();
     modal.style.display = "none";
+}
+
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
 }
